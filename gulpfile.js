@@ -6,11 +6,11 @@ const pngquant = require('imagemin-pngquant');
 const mozjpeg = require('imagemin-mozjpeg');
 
 gulp.task('img', () => {
-  return gulp.src(srcDir + '/*.{png,jpg,gif}')
+  return gulp.src(srcDir + '/*.{png,jpg,gif,PNG,JPG,GIF}')
     .pipe(imagemin([
       pngquant('65-80'),
       mozjpeg({
-        quality: 85, 
+        quality: 80, 
         progressive: true
       }),
       imagemin.svgo(),
