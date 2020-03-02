@@ -4,7 +4,9 @@ const srcDir = 'src';
 const imagemin = require('gulp-imagemin');
 const pngquant = require('imagemin-pngquant');
 const mozjpeg = require('imagemin-mozjpeg');
+const webp = require('gulp-webp');
 
+// 画像を圧縮する
 gulp.task('img', () => {
   return gulp.src(srcDir + '/*.{png,jpg,gif,PNG,JPG,GIF}')
     .pipe(imagemin([
@@ -19,3 +21,10 @@ gulp.task('img', () => {
     ]))
     .pipe(gulp.dest(distDir));
 });
+
+// webp形式での変換
+gulp.task('webp', () =>
+  gulp.src(srcDir + '/*.{png,jpg,gif,PNG,JPG,GIF}')
+    .pipe(webp())
+    .pipe(gulp.dest(distDir))
+);
