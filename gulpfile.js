@@ -4,7 +4,7 @@ const { src, dest, parallel } = require('gulp');
 // 共通のパス
 const distDir = 'dist';
 const srcDir = 'src';
-const srcImgGlob = srcDir + '//**/*.{png,jpg,jpeg,gif,PNG,JPG,JPEG,GIF}';
+const srcImgGlob = srcDir + '/**/*.{png,jpg,jpeg,webp,PNG,JPG,JPEG,WEBP}';
 
 // 画像最適化プラグイン
 const imagemin = require('gulp-imagemin');
@@ -54,32 +54,55 @@ function imgWebp() {
     .pipe(dest(distDir)); // 出力先を dist に変更
 }
 
-// --- OGPリサイズタスク ---
-function ogpResize() {
-  const timestamp = getTimestamp();
-  const outputDir = `${distDir}/ogp_${timestamp}`;
+// --- 画像を指定サイズにリサイズし、実際のサイズを名前に付与するタスク ---
+const path = require('path');
+const fs = require('fs').promises;
+const glob = require('glob');
+const sharpLib = require('sharp'); // sharp本体を読み込む
 
-  return src(srcImgGlob)
-    .pipe(sharp({
-      formats: [
-        {
-          width: 2400,
-          height: 1260,
-          fit: 'cover',
-          jpegOptions: { quality: 80, progressive: true },
-          pngOptions: { quality: 80 },
-        }
-      ]
-    }))
-    .pipe(dest(outputDir)); // タイムスタンプ付きフォルダに出力
+async function resize() {
+  const outputDir = `${distDir}/resized`;
+  const options = {
+    maxWidth: 2400,
+    maxHeight: 1260,
+  };
+
+  // 出力先ディレクトリを作成
+  await fs.mkdir(outputDir, { recursive: true });
+
+  // globで画像ファイルを取得
+  const files = glob.sync(srcImgGlob);
+
+  for (const file of files) {
+    try {
+      const originalName = path.basename(file, path.extname(file));
+      const fileBuffer = await fs.readFile(file);
+
+      const resizedBuffer = await sharpLib(fileBuffer)
+        .resize(options.maxWidth, options.maxHeight, {
+          fit: 'inside',
+          withoutEnlargement: true,
+        })
+        .toBuffer();
+
+      const metadata = await sharpLib(resizedBuffer).metadata();
+      const { width, height } = metadata;
+
+      const newFileName = `${originalName}_${width}x${height}${path.extname(file)}`;
+      const outputPath = path.join(outputDir, newFileName);
+
+      await fs.writeFile(outputPath, resizedBuffer);
+      console.log(`Processed: ${newFileName}`);
+    } catch (err) {
+      console.error(`Error processing ${file}:`, err);
+    }
+  }
 }
 
 // タスクをエクスポート
 exports.img = imgMin;
 exports.webp = imgWebp;
-exports.ogp = ogpResize;
+exports.resize = resize; // リサイズタスク
 
 // `npx gulp` で実行されるデフォルトタスク
-// ★安全のため、OGPリサイズは default から除外します
-// 実行されるのは「圧縮」と「WebP変換」のみ
 exports.default = parallel(imgMin, imgWebp);
