@@ -1,22 +1,23 @@
 {
-  "name": "programming",
+  "name": "imagemin_gulp",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
+  "description": "A simple image optimization setup using Gulp.",
+  "main": "gulpfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "gulp": "^4.0.2",
-    "gulp-imagemin": "^5.0.3",
+    "gulp-imagemin": "^7.1.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-sharp-responsive": "^0.4.1",
     "gulp-webp": "^4.0.1",
-    "imagemin-mozjpeg": "^8.0.0",
-    "imagemin-pngquant": "^7.0.0",
-    "imagemin-webp": "^5.1.0"
+    "imagemin-gifsicle": "^7.0.0",
+    "imagemin-mozjpeg": "^9.0.0",
+    "imagemin-optipng": "^8.0.0",
+    "imagemin-pngquant": "^9.0.2",
+    "imagemin-svgo": "^9.0.0"
   }
 }
