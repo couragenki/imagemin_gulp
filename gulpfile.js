@@ -63,8 +63,8 @@ const sharpLib = require('sharp'); // sharp本体を読み込む
 async function resize() {
   const outputDir = `${distDir}/resized`;
   const options = {
-    maxWidth: 2400,
-    maxHeight: 1260,
+    maxWidth: 1200,
+    maxHeight: 630,
   };
 
   // 出力先ディレクトリを作成
